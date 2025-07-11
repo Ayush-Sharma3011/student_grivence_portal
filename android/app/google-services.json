@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485931116060",
+    "project_id": "student-help-portal-184a3",
+    "storage_bucket": "student-help-portal-184a3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485931116060:android:54b7d1a27e77655b1a61d9",
+        "android_client_info": {
+          "package_name": "com.example.student_grivence_portal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_7WXMup1EhpFrHVWbdKf4CiFDIX2pJuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
