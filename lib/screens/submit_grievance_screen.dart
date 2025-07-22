@@ -97,12 +97,13 @@ class _SubmitGrievanceScreenState extends State<SubmitGrievanceScreen> {
                 ElevatedButton(
                   onPressed: _loading ? null : _submitGrievance,
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     backgroundColor: const Color(0xFF0052CC),
                   ),
                   child: _loading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Submit'),
+                      : const Text('Submit',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
                 ),
               ],
             ),

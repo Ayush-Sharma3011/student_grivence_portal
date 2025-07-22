@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../screens/dashboard_screen.dart';
 
@@ -10,11 +12,34 @@ class MobileLayout extends StatefulWidget {
 
 class _MobileLayoutState extends State<MobileLayout> {
   int selectedIndex = 0;
+  String userName = 'Loading...';
 
   void handleNavigation(int index) {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserName();
+  }
+
+  Future<void> _fetchUserName() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+
+    if (doc.exists) {
+      setState(() {
+        userName = doc.data()?['name'] ?? 'Student';
+      });
+    }
   }
 
   Widget _getSelectedScreen() {
@@ -37,22 +62,31 @@ class _MobileLayoutState extends State<MobileLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Grievance Portal'),
-      ),
+      appBar: AppBar(title: const Text('Student Grievance Portal')),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF0052CC)),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Color(0xFF0052CC)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(radius: 30, backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3')),
-                  SizedBox(height: 8),
-                  Text('Avantika Rana',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  const CircleAvatar(
+                    radius: 30,
+                    backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?img=3',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Hello $userName",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ],
               ),
             ),

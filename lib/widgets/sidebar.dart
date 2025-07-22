@@ -26,21 +26,35 @@ class _SidebarState extends State<Sidebar> {
   }
 
   Future<void> _fetchUserName() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
 
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  try {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (!mounted) return; // ✅ avoid setState if widget is disposed
 
     if (doc.exists) {
       setState(() {
         userName = doc.data()?['name'] ?? 'Student';
       });
     }
+  } catch (e) {
+    if (mounted) {
+      setState(() {
+        userName = 'Student';
+      });
+    }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+if (uid == null) {
+  return const SizedBox(); // return empty widget if logged out
+}
     final List<Map<String, dynamic>> menuItems = [
       {'icon': Icons.dashboard, 'label': 'Dashboard'},
       {'icon': Icons.add_circle_outline, 'label': 'Submit Grievance'},
@@ -57,7 +71,7 @@ class _SidebarState extends State<Sidebar> {
           const SizedBox(height: 40),
           const CircleAvatar(
             radius: 40,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
+            backgroundImage: AssetImage('images/profile_man.png'),
           ),
           const SizedBox(height: 12),
           Text(

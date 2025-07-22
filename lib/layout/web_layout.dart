@@ -26,13 +26,13 @@ class _WebLayoutState extends State<WebLayout> {
       case 0:
         return const DashboardScreen();
       case 1:
-      return const SubmitGrievanceScreen();
+        return const SubmitGrievanceScreen();
       case 2:
         return const MyGrievancesScreen();
       case 3:
-        return Center(child: Text('Notices (Coming Soon)'));
+        return const Center(child: Text('Notices (Coming Soon)'));
       case 4:
-        return Center(child: Text('Settings (Coming Soon)'));
+        return const Center(child: Text('Settings (Coming Soon)'));
       default:
         return const DashboardScreen();
     }
@@ -41,26 +41,29 @@ class _WebLayoutState extends State<WebLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const TopBar(loadingUser: false, userName: ''), // 👈 Add this
-          Expanded(
-            child: Row(
-              children: [
-                Sidebar(
-                  selectedIndex: selectedIndex,
-                  onItemSelected: handleSidebarSelection,
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    child: _getSelectedScreen(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            const TopBar(loadingUser: false, userName: ''),
+            Expanded(
+              child: Row(
+                children: [
+                  Sidebar(
+                    selectedIndex: selectedIndex,
+                    onItemSelected: handleSidebarSelection,
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      color: const Color(0xFFF5F6FA),
+                      child: _getSelectedScreen(),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

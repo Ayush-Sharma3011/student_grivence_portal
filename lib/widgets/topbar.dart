@@ -10,9 +10,8 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
 
   @override
   State<TopBar> createState() => _TopBarState();
-  
+
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => const Size.fromHeight(60);
 }
 
@@ -32,20 +31,32 @@ class _TopBarState extends State<TopBar> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
-    setState(() {
-      _userName = doc.data()?['name'] ?? 'User';
-      _loadingUser = false;
-    });
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (!mounted) return;
+
+      setState(() {
+        _userName = doc.data()?['name'] ?? 'User';
+        _loadingUser = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _userName = 'User';
+          _loadingUser = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: preferredSize.height,
+      height: widget.preferredSize.height,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -68,14 +79,37 @@ class _TopBarState extends State<TopBar> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications_none),
-                onPressed: () {
-                  // TODO: Notification logic
-                },
+                onPressed: () {},
               ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Logout logic
+                onPressed: () async {
+                  final shouldLogout = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text("Log out"),
+                      content: const Text("Are you sure you want to log out?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: const Text("Logout"),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (shouldLogout == true) {
+                    await FirebaseAuth.instance.signOut();
+
+                    if (!mounted) return;
+
+                    Navigator.of(context)
+                        .pushReplacementNamed('/login'); // Go to login
+                  }
                 },
                 icon: const Icon(Icons.logout, size: 16),
                 label: const Text('Logout'),
@@ -94,6 +128,4 @@ class _TopBarState extends State<TopBar> {
       ),
     );
   }
-
-  Size get preferredSize => const Size.fromHeight(60);
 }

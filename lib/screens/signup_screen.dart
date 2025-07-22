@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'login_screen.dart';
-
+import 'package:student_grivence_portal/layout/mobile_layout.dart';
+import 'package:student_grivence_portal/layout/responsive_layout.dart';
+import 'package:student_grivence_portal/layout/web_layout.dart';
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -36,7 +37,16 @@ class _SignupScreenState extends State<SignupScreen> {
       });
 
       Fluttertoast.showToast(msg: 'Signup Successful!');
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+          builder: (_) => const ResponsiveLayout(
+            mobileLayout: MobileLayout(),
+            webLayout: WebLayout(),
+          ),
+        ),
+      );
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "Signup failed");
     } finally {

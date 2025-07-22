@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:student_grivence_portal/admin/admin_layout.dart';
 import '../layout/responsive_layout.dart';
 import '../layout/web_layout.dart';
 import '../layout/mobile_layout.dart';
@@ -19,32 +21,47 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
 
   void _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _loading = true);
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+  setState(() => _loading = true);
+  try {
+    // Sign in the user
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
 
-      Fluttertoast.showToast(msg: 'Login Successful');
+    // ✅ Check if user is admin
+    final isAdmin = await isAdminUser();
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const ResponsiveLayout(
-            mobileLayout: MobileLayout(),
-            webLayout: WebLayout(),
-          ),
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(msg: e.message ?? "Login failed");
-    } finally {
-      setState(() => _loading = false);
-    }
+    Fluttertoast.showToast(msg: 'Login Successful');
+
+    // 🔁 Navigate accordingly
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => isAdmin
+            ? const AdminLayout() // ⬅️ Create this screen
+            : const ResponsiveLayout(
+                mobileLayout: MobileLayout(),
+                webLayout: WebLayout(),
+              ),
+      ),
+    );
+  } on FirebaseAuthException catch (e) {
+    Fluttertoast.showToast(msg: e.message ?? "Login failed");
+  } finally {
+    setState(() => _loading = false);
   }
+}
+
+  Future<bool> isAdminUser() async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return false;
+
+  final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  return doc.exists && doc.data()?['role'] == 'admin';
+}
 
   @override
   Widget build(BuildContext context) {
