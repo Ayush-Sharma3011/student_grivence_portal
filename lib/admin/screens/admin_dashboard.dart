@@ -1,21 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
 
-Future<void> fetchUserName() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
 
-    
-      }
-    }
   
   @override
   Widget build(BuildContext context) {
@@ -29,9 +18,9 @@ Future<void> fetchUserName() async {
 
         for (var doc in grievances) {
           final status = doc['status'];
-          if (status == 'Pending') pending++;
-          else if (status == 'In Progress') inProgress++;
-          else if (status == 'Resolved') resolved++;
+          if (status == 'Pending') {pending++;}
+          else if (status == 'In Progress') {inProgress++;}
+          else if (status == 'Resolved') {resolved++;}
         }
 
         return SingleChildScrollView(
@@ -71,6 +60,7 @@ Future<void> fetchUserName() async {
       child: Container(
         height: 120,
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -93,7 +83,7 @@ Future<void> fetchUserName() async {
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
         title: Text(data['subject'] ?? 'No subject'),
-        subtitle: Text('By: ${doc['user'] ?? "Unknown"}'),
+        subtitle: Text('By: ${data['user'] ?? "Unknown"}'),
         trailing: Chip(
           label: Text(data['status'] ?? 'Unknown'),
           backgroundColor: _statusColor(data['status'] ?? ''),
